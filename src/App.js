@@ -1,31 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
-import {Amplify} from 'aws-amplify';
-import {withAuthenticator} from "@aws-amplify/ui-react";
-import '@aws-amplify/ui-react/styles.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Home from './Home';
+import Member from './Member';
+import SurroundSpot from './surround_spot';
+import './App.css';  // CSSファイルをインポート
 
-import awsExports from './aws-exports';
-Amplify.configure(awsExports);
-
-function App({ signOut, user }) {
+function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          こんにちは！書き換えました。
-        </p>
-        {user ? (
-          <>
-            <h3>私は権限を持っています：{user.username}</h3>
-            <button onClick={() => signOut()}>サインアウト</button>
-          </>
-        ):(
-          <h3>権限がありません</h3>
-        )}
-      </header>
-    </div>
+    <Router>
+      <div>
+        <header>
+          <h1>REMapAPI presented by cocolomachi</h1>
+          <nav className="navbar">
+            <ul style={{ display: 'flex', listStyleType: 'none', padding: 0 }}>
+              <li style={{ margin: '0 10px' }}>
+                <Link to="/">Home</Link>
+              </li>
+              <li style={{ margin: '0 10px' }}>
+                <Link to="/member">Member</Link>
+              </li>
+              <li style={{ margin: '0 10px' }}>
+                <Link to="/surround_spot">Surround Spot</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/member" element={<Member />} />
+          <Route path="/surround_spot" element={<SurroundSpot />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
-export default withAuthenticator(App);
+export default App;
