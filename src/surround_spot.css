@@ -1,8 +1,8 @@
 #mapcontainer {
-    height: 600px; /* 必要に応じて高さを調整 */
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
+  height: 600px; /* 必要に応じて高さを調整 */
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 /* タブコンテナのスタイル */
@@ -10,6 +10,7 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
+  position: relative; /* 子要素の位置調整のため */
 }
 
 /* タブのスタイル */
@@ -43,9 +44,9 @@
 }
 
 .side-panel {
-  position: fixed;
+  position: absolute; /* 位置を絶対指定 */
   right: 0;
-  top: 178px; /* ボタンの下に配置 */
+  top: 40px; /* ボタンの下に配置 */
   width: 200px;
   max-height: 0; /* 初期位置は非表示 */
   background-color: white;
@@ -88,6 +89,7 @@
 .side-panel .spot-name {
   word-break: break-word; /* 長い単語を折り返す */
   max-width: calc(100% - 34px); /* 数字の部分を除いた幅 */
+  text-align: left;
 }
 
 /* 地図上のカスタムアイコンのスタイル */

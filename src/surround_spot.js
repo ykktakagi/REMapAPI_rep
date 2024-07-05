@@ -91,20 +91,20 @@ function SurroundSpot() {
             <button className={activeCategory === '交通' ? 'active' : ''} onClick={() => setActiveCategory('交通')}>交通</button>
             <button className={activeCategory === 'その他' ? 'active' : ''} onClick={() => setActiveCategory('その他')}>その他</button>
           </div>
-          <button onClick={togglePanel}>{isPanelOpen ? '施設リスト▲' : '施設リスト▼'}</button>
+          <button className="facility-list-button" onClick={togglePanel}>{isPanelOpen ? '施設リスト▲' : '施設リスト▼'}</button>
+        </div>
+        <div className={`side-panel ${isPanelOpen ? 'open' : ''}`}>
+          <ul>
+            {visibleSpots.map((spot, index) => (
+              <li key={index}>
+                <span className="spot-no">{spot.spot_no}</span>
+                <span className="spot-name">{spot.spot_name}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       <div id="mapcontainer"></div>
-      <div className={`side-panel ${isPanelOpen ? 'open' : ''}`}>
-        <ul>
-          {visibleSpots.map((spot, index) => (
-            <li key={index}>
-              <span className="spot-no">{spot.spot_no}</span>
-              <span className="spot-name">{spot.spot_name}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
