@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
-import spotsData from './json/spotsData.json'; // JSONファイルをインポート
-import 'leaflet/dist/leaflet.css'; // LeafletのCSSをインポート
-import './surround_spot.css'; // カスタムCSSをインポート
+import 'leaflet/dist/leaflet.css';
+import './surround_spot.css';
+import { Amplify, DataStore } from 'aws-amplify';
+import { Spot } from './models'; // ここはあなたのデータモデルのパスに変更してください
+import awsExports from './aws-exports';
+Amplify.configure(awsExports);
 
 function SurroundSpot() {
   const [map, setMap] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('公共'); // 最初は「公共」が選択されている
-  const [isPanelOpen, setIsPanelOpen] = useState(false); // パネルの開閉状態
-  const [visibleSpots, setVisibleSpots] = useState([]); // 表示されている施設リスト
+  const [activeCategory, setActiveCategory] = useState('公共');
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [visibleSpots, setVisibleSpots] = useState([]);
 
   const markersRef = useRef([]);
 
   useEffect(() => {
-    if (!document.getElementById('mapcontainer')._leaflet_id) {  // 地図が既に初期化されていないか確認
-      const initialMap = L.map('mapcontainer').setView([35.7627519, 139.6814164], 15); // 初期位置を設定
+    if (!document.getElementById('mapcontainer')._leaflet_id) {
+      const initialMap = L.map('mapcontainer').setView([35.7627519, 139.6814164], 15);
 
       L.tileLayer('https://tile.openstreetmap.jp/{z}/{x}/{y}.png', {
         attribution: "<a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors",
@@ -26,8 +29,17 @@ function SurroundSpot() {
   }, []);
 
   useEffect(() => {
+    async function fetchData() {
+      const spots = await DataStore.query(Spot);
+      setVisibleSpots(spots.filter(spot => spot.show_category === activeCategory));
+    }
+
+    fetchData();
+  }, [activeCategory]);
+
+  useEffect(() => {
     if (map) {
-      markersRef.current.forEach(marker => map.removeLayer(marker)); // 既存のマーカーをすべて削除
+      markersRef.current.forEach(marker => map.removeLayer(marker));
       markersRef.current = [];
 
       const iconMappings = {
@@ -43,14 +55,12 @@ function SurroundSpot() {
         "その他": "/icons/mapicon_num_other.png"
       };
 
-      const newVisibleSpots = spotsData.filter(spot => spot.show_category === activeCategory);
-
-      newVisibleSpots.forEach((spot) => {
+      visibleSpots.forEach((spot) => {
         const lat = spot.spot_latitude;
         const lng = spot.spot_longitude;
         const iconUrl = iconMappings[spot.icon_category];
 
-        if (lat && lng && iconUrl) {  // 緯度と経度が存在し、アイコンのURLがあるか確認
+        if (lat && lng && iconUrl) {
           const customIcon = L.divIcon({
             html: `<div class="custom-div-icon"><img src="${iconUrl}"><div class="spot-no">${spot.spot_no}</div></div>`,
             iconSize: [45, 45],
@@ -66,10 +76,8 @@ function SurroundSpot() {
           console.error(`Invalid coordinates or missing icon URL for spot: ${spot.spot_name}`);
         }
       });
-
-      setVisibleSpots(newVisibleSpots);
     }
-  }, [map, activeCategory]);
+  }, [map, visibleSpots]);
 
   const togglePanel = () => {
     setIsPanelOpen(!isPanelOpen);
